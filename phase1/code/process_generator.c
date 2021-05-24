@@ -16,7 +16,7 @@ void* shmaddr2;
 
 void secPassed(int);
 void clearResources(int);
-void initArgs(int, char*[]);
+void initArgs(int, char**, char*[]);
 
 int main(int argc, char *argv[])
 {
@@ -24,8 +24,6 @@ int main(int argc, char *argv[])
 	signal(SIGINT, clearResources);
 	signal(SIGUSR1, secPassed);
 
-	initArgs(argc, argv);
-	
 	char* cwd = get_cwd();
 
 	// This function is only used in the process_generator
@@ -37,12 +35,8 @@ int main(int argc, char *argv[])
 	shm = getshm();
   shmaddr2 = shmat(shm, NULL, 0);
 
-	// This does not assume what so ever that the input file is in the same directory as the process_generator (Ctrl+F "8y:]nF9P")
-	char path[512];
-	strcpy(path, cwd);
-	strcat(strcat(path, "/"), argv[1]);
 	// 1. Read the input files.
-	FILE *fp = fopen(path, "r");
+	FILE *fp = fopen(argv[1], "r");
 	char *line = NULL;
 
 	unsigned long int dummy;
@@ -74,7 +68,7 @@ int main(int argc, char *argv[])
 		{
 			continue;
 		}
-		sscanf(line, "%u %u %u %u %u", &proc[i]._id, &proc[i].arv, &proc[i].run, &proc[i].pri, &proc[i].mem);
+		sscanf(line, "%u %u %u %u", &proc[i]._id, &proc[i].arv, &proc[i].run, &proc[i].pri);
 		i++;
 	}
 
@@ -84,38 +78,22 @@ int main(int argc, char *argv[])
 	// 2. Read the chosen scheduling algorithm and its parameters, if there are any from the argument list.
 
 	// 3. Initiate and create the scheduler and clock processes.
-	char realcwd[512];
-	strcpy(realcwd, cwd);
-	// free free freeeee
-	free(cwd);
-
-	// In this part, we use the cwd with the argv[0] to know the real cwd and start the scheduler and clock from it (reference "8y:]nF9P")
-	strcat(strcat(realcwd, "/"), argv[0]);
-	for (int i = strlen(realcwd) - 1; i >= 0; i--)
-	{
-		if(realcwd[i] == '/')
-		{
-			realcwd[i+1] = 0;
-			break;
-		}
-	}
-	
 	sch = fork();
 	if (!sch)
 	{
 		char last_proc[12];
 		snprintf(last_proc, 12, "%u", proc[proc_count-1].arv);
-		char* var = "1";
-		if(argc == 8)
+
+		char* var = "0";
+		if(argc == 4)
 		{
-			var = argv[4];
+			var = argv[3];
 		}
-		
 		char path[512];
-		strcpy(path, realcwd);
+		strcpy(path, cwd);
 		strcat(path, "/scheduler.o");
 
-		char* args[] = {argv[2], last_proc, var, argv[3], realcwd, NULL};
+		char* args[] = {argv[2], last_proc, var, NULL};
 		execv(path, args);
 	}
 
@@ -123,13 +101,15 @@ int main(int argc, char *argv[])
 	if (!clk)
 	{
 		char path[512];
-		strcpy(path, realcwd);
+		strcpy(path, cwd);
 		strcat(path, "/clk.o");
 
 		char* args[] = {NULL};
 		execv(path, args);
 	}
 
+	// free free freeeee
+	free(cwd);
 
 	// 4. Use this function after creating the clock process to initialize clock.
 	initClk();
@@ -191,47 +171,4 @@ void clearResources(int signum)
 	printf("System shutting, bye bye\n");
 
 	exit(0);
-}
-
-void initArgs(int count, char* args[])
-{
-	// ./p_g procs -sch 4 -mem 3
-	// or
-	// ./p_g procs -q 4 -mem 4 -sch 5
-
-	char* ind_s = 0;
-	char* ind_m = 0;
-	char* ind_q = 0;
-
-	for (int i = 2; i < count; i++)
-	{
-		if(args[i][0] == '-')
-		{
-			if(args[i][1] == 's')
-			{
-				ind_s = args[i+1];
-			}
-			else if(args[i][1] == 'm')
-			{
-				ind_m = args[i+1];
-			}
-			else if(args[i][1] == 'q')
-			{
-				ind_q = args[i+1];
-			}
-		}
-	}
-	
-	if(ind_s != 0)
-	{
-		args[2] = ind_s;
-	}
-	if(ind_m != 0)
-	{
-		args[3] = ind_m;
-	}
-	if(ind_q != 0)
-	{
-		args[4] = ind_q;
-	}
 }

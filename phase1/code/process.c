@@ -21,7 +21,10 @@ int main(int agrc, char *argv[])
 	
 	//TODO The process needs to get the remaining time from somewhere
 
-	while (remainingtime > 0);
+	while (remainingtime > 0)
+	{
+		pause();
+	}
 
 	//destroyClk(false);
 	return 0;

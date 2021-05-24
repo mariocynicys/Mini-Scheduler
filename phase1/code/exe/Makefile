@@ -11,5 +11,5 @@ clean:
 all: clean build
 
 run: all
-	./test_generator.o 10 procs.m
-	./process_generator.o procs.m 1
+	./test_generator.o 10 procs
+	./process_generator.o procs 1

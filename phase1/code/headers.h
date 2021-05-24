@@ -23,7 +23,6 @@ typedef short bool;
 // And we use this perk in many places in our code to keep it shorter and clean
 // TL;DR use 2, 4, 8, ... , 512, 1024, and so on
 #define MAX_PROC_TABLE_SIZE 1024
-#define MAX_MEM_SIZE 1024
 
 union Semun
 {
@@ -40,7 +39,6 @@ struct process
 	unsigned int arv;
 	unsigned int run;
 	unsigned int pri;
-	unsigned int mem;
 };
 ///==============================
 //don't mess with this variable//
