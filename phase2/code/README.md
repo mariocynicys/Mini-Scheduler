@@ -21,9 +21,9 @@ the `3` refers to the selected memory allocation policy.
 <br>
 
 ## Notice:
-- ### Arguments `-sch` & `-mem` must be given.
+- # Arguments `-sch` & `-mem` must be given.
 
-- ### Argument `-q` is optional. If it isn't specified, it defaults to `1` when needed.
+- ## Argument `-q` is optional. If it isn't specified, it defaults to `1` when needed.
 
 - ### Arguments can be given in any order.
 
