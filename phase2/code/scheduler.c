@@ -869,7 +869,7 @@ unsigned int BSA(unsigned int mem)
 				min_fit = ff;
 			}
 			space = 0;
-			// Move by amount equals the largest of (memo[ff] & mem)
+			// Move ff by an amount that is equal to the largest of (memo[ff] & mem)
 			ff += (memo[ff]>mem)?memo[ff]:mem;
 		}
 		else
@@ -902,13 +902,3 @@ unsigned int allc(unsigned int mem)
 	}
 }
 
-// So this is how you will apply the memory allocation policy to the system:
-// In each next_ function you assure that there is a process that can be allocated successfully
-// And this is just a checker to force the correctness of the allocation, the real allocation will
-// Happen in the start function, we may need to provide another parameter to the start function that will
-// Be coming from next_ functions so not to recompute the place in memory it should reside on again.
-//
-// Oh, so one way to think of it is to return the memory address of where to start allocation from next_ functions
-// And recieve it in start(struct PBC* pcb_p, int mem_start), the memory start address can be zero sometimes, this will break some 
-// Existing functionalities, some checks are performed [if(next(&pcb_curr) == 0)], one way to solve this, is to send the return (mem_start+1)
-// And when received by start(struct PBC* pcb_p, int mem_start), it get decremented by 1
