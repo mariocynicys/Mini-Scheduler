@@ -18,7 +18,7 @@ struct PCB
 // nowhere, so it is discarded
 struct PCB pcb[MAX_PROC_TABLE_SIZE];
 // An array representing the memory of the system
-unsigned int memo[MAX_MEM_SIZE];
+unsigned int sys_mem[MAX_MEM_SIZE];
 // Next fit memory pointer
 unsigned int nf = 0;
 // To count how many round robin cycles a process has taken
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 	}
 	for (int i = 0; i < MAX_MEM_SIZE; i++)
 	{
-		memo[i] = -1;
+		sys_mem[i] = -1;
 	}
 
 	shm = getshm();
@@ -215,7 +215,7 @@ char next_rr(int* pcb_cur)
 		return 0;
 	}
 
-	// THIS WON'T CAUSE AND INF LOOP, YOU HAVE ALREADY CHECKED FOR PCB COUNT, THAT MEANS THERE IS AT LEAST ONE PROCESS IN THE TABLE
+	// THIS WON'T CAUSE AN INF LOOP, YOU HAVE ALREADY CHECKED FOR PCB COUNT, THAT MEANS THERE IS AT LEAST ONE PROCESS IN THE TABLE
 	// AND IF ALL PROCESSES CAN'T BE ALLOCATED, THE RUNNING PROCESS WILL GET ALLOCATED
 	while (true)
 	{
@@ -406,7 +406,7 @@ void start(struct PCB *pcb_p)
 	pcb_p->state = RUNNING;
 
 	// Allocating memory for this process
-	memo[pcb_p->mem_s] = pcb_p->data.mem;
+	sys_mem[pcb_p->mem_s] = pcb_p->data.mem;
 	fprintf(fp, "At time %u\tprocess %u\tstarted arr %u\ttotal %u\tremain %u\twait %u\n", clk, pcb_p->data._id, pcb_p->data.arv, pcb_p->data.run, pcb_p->rem_t, clk-pcb_p->data.arv-pcb_p->exe_t);
 	fprintf(mp, "At time %u\tallocated %u\tbytes for process %u\tfrom %u\tto %u\n", clk, pcb_p->data.mem, pcb_p->data._id, pcb_p->mem_s, pcb_p->mem_s + pcb_p->data.mem - 1);
 }
@@ -439,7 +439,7 @@ void finish(struct PCB *pcb_p)
 	tot_wta += WTA;
 	tot_wait += (clk-pcb_p->data.arv-pcb_p->exe_t);
 	// Deallocating the process' memory
-	memo[pcb_p->mem_s] = -1;
+	sys_mem[pcb_p->mem_s] = -1;
 	// This can be waitpid(no_pcb->pid, ...), but since this is a 1-core cpu, 1 process at a time, so no worries about which process it's gonna reap
 	wait(&clk);
 	*pcb_p = no_pcb;
@@ -770,10 +770,10 @@ unsigned int FF(unsigned int mem)
 	unsigned int target_mem = 0, ff = 0;
 	while (ff < MAX_MEM_SIZE && target_mem != mem)
 	{
-		if(memo[ff] != -1)
+		if(sys_mem[ff] != -1)
 		{
 			target_mem = 0;
-			ff += memo[ff];
+			ff += sys_mem[ff];
 		}
 		else
 		{
@@ -797,10 +797,10 @@ unsigned int NF(unsigned int mem)
 	unsigned int temp = nf, target_mem = 0;
 	while(nf < MAX_MEM_SIZE && target_mem != mem)
 	{
-		if(memo[nf] != -1)
+		if(sys_mem[nf] != -1)
 		{
 			target_mem = 0;
-			nf += memo[nf];
+			nf += sys_mem[nf];
 		}
 		else
 		{
@@ -831,7 +831,7 @@ unsigned int BF(unsigned int mem)
 	unsigned int space = 0, ff = 0, min_mem = -1, min_fit = -2;
 	while (ff < MAX_MEM_SIZE)
 	{
-		if(memo[ff] != -1)
+		if(sys_mem[ff] != -1)
 		{
 			if(space < min_mem && space >= mem)
 			{
@@ -839,7 +839,7 @@ unsigned int BF(unsigned int mem)
 				min_fit = ff;
 			}
 			space = 0;
-			ff += memo[ff];
+			ff += sys_mem[ff];
 		}
 		else
 		{
@@ -861,7 +861,7 @@ unsigned int BSA(unsigned int mem)
 	unsigned int space = 0, ff = 0, min_mem = -1, min_fit = -2;
 	while (ff < MAX_MEM_SIZE)
 	{
-		if(memo[ff] != -1)
+		if(sys_mem[ff] != -1)
 		{
 			if(space < min_mem && space >= mem)
 			{
@@ -869,8 +869,8 @@ unsigned int BSA(unsigned int mem)
 				min_fit = ff;
 			}
 			space = 0;
-			// Move ff by an amount that is equal to the largest of (memo[ff] & mem)
-			ff += (memo[ff]>mem)?memo[ff]:mem;
+			// Move ff by an amount that is equal to the largest of (sys_mem[ff] & mem)
+			ff += (sys_mem[ff]>mem)?sys_mem[ff]:mem;
 		}
 		else
 		{
