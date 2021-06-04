@@ -624,13 +624,6 @@ void SRTN()
 		}
 	}
 
-	// No need to surroud this next_ function with a zero check, because 
-	// if there is no applicable process to be choosed and fit in memory, this section
-	// won't be run in the frist place, the conditions where this secion runs are,
-	//1- if a process is has just been finished and another process is ready. (no zero return, prove it!)
-	//2- if a process is has just been stopped and another process to run. (proved above)
-	//3- if no process was running, but there is a process or more in the system.
-	// Proving this will give you a deep understanding of the system flow.
 	next_shortest_remaining(&pcb_curr);
 	srtn_lbl:
 	if(pcb[pcb_curr].state == NOTSTARTED)
