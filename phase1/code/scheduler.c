@@ -638,7 +638,7 @@ void a_second_has_passed(int signum)
 void perf()
 {
 	fclose(fp);
-	fp = fopen("scheduler.pref", "w");
+	fp = fopen("scheduler.perf", "w");
 	tot_wait /= tot_procs;
 	tot_wta /= tot_procs;
 	unsigned int clk = getClk();
