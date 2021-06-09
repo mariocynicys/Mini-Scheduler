@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 		char last_proc[12];
 		snprintf(last_proc, 12, "%u", proc[proc_count-1].arv);
 
-		char* var = "0";
+		char* var = "1";
 		if(argc == 4)
 		{
 			var = argv[3];
