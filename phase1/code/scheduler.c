@@ -334,7 +334,7 @@ void stop(struct PCB *pcb_p)
 void finish(struct PCB *pcb_p)
 {
 	int clk = getClk();
-	double WTA = (double)(clk-pcb_p->data.arv)/(double)(pcb_p->exe_t);
+	double WTA = (double)(clk-pcb_p->data.arv)/(double)(pcb_p->exe_t?pcb_p->exe_t:1);
 	fprintf(fp, "At time %u\tprocess %u\tfinished arr %u\ttotal %u\tremain %u\twait %u\t", clk, pcb_p->data._id, pcb_p->data.arv, pcb_p->data.run, pcb_p->rem_t, clk-pcb_p->data.arv-pcb_p->exe_t);
 	fprintf(fp, "TA %u\tWTA %.2f\n", clk-pcb_p->data.arv, WTA);
 	tot_wta += WTA;
