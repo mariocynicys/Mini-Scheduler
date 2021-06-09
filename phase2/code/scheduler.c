@@ -120,7 +120,7 @@ char next(int* pcb_cur)
 		(*pcb_cur)++;
 		(*pcb_cur) %= MAX_PROC_TABLE_SIZE;
 	}
-	pcb[(*pcb_cur)].mem_s = 0;
+	pcb[(*pcb_cur)].mem_s = mem_pol == 2 ? allc(pcb[(*pcb_cur)].data.mem): 0;
 	return 1;
 }
 // Used by SJF // NO EDITS NEEDED FOR MEM
@@ -152,7 +152,7 @@ char next_shortest(int* pcb_cur)
 			j++;
 		}
 	}
-	pcb[(*pcb_cur)].mem_s = 0;
+	pcb[(*pcb_cur)].mem_s = mem_pol == 2 ? allc(pcb[(*pcb_cur)].data.mem): 0;
 	return 1;
 }
 // Used by SRTN
