@@ -221,6 +221,7 @@ void exxit(int signum)
 {
 	// Because SIGINT exits with a non-zero exit code
 	// This is no critical thing, but a non-zero exit code is highlighted in my terminal with a red (x) letter, and it's annoying
+	destroyClk(true);
 	exit(0);
 }
 
