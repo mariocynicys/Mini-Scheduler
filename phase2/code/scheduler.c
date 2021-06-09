@@ -408,6 +408,8 @@ void start(struct PCB *pcb_p)
 
 	// Allocating memory for this process
 	sys_mem[pcb_p->mem_s] = pcb_p->data.mem;
+	// Moving the next fit pointer
+	if(mem_pol == 2) nf += pcb_p->data.mem;
 	fprintf(fp, "At time %u\tprocess %u\tstarted arr %u\ttotal %u\tremain %u\twait %u\n", clk, pcb_p->data._id, pcb_p->data.arv, pcb_p->data.run, pcb_p->rem_t, clk-pcb_p->data.arv-pcb_p->exe_t);
 	fprintf(mp, "At time %u\tallocated %u\tbytes for process %u\tfrom %u\tto %u\n", clk, pcb_p->data.mem, pcb_p->data._id, pcb_p->mem_s, pcb_p->mem_s + pcb_p->data.mem - 1);
 }
@@ -788,7 +790,7 @@ unsigned int NF(unsigned int mem)
 	{
 		nf = 0;
 	}
-	unsigned int temp = nf, target_mem = 0;
+	unsigned int target_mem = 0;
 	while(nf < MAX_MEM_SIZE && target_mem != mem)
 	{
 		if(sys_mem[nf] != -1)
@@ -807,17 +809,7 @@ unsigned int NF(unsigned int mem)
 		return nf - mem;
 	}
 	// Do a First Fit
-	nf = FF(mem);
-	if(nf == -1)
-	{
-		// Keep the nf @ its intial position
-		nf = temp;
-		// No memory space found for mem
-		return -1;
-	}
-	// Update the nf from the FF()
-	nf += mem;
-	return nf - mem;
+	return FF(mem);
 }
 
 unsigned int BF(unsigned int mem)
@@ -883,12 +875,16 @@ unsigned int BSA(unsigned int mem)
 
 unsigned int allc(unsigned int mem)
 {
+	unsigned int tmpnf = nf;
+	unsigned int memstart;
 	switch (mem_pol)
 	{
 	case 1:
 		return FF(mem);
 	case 2:
-		return NF(mem);
+		memstart = NF(mem);
+		nf = tmpnf;
+		return memstart;
 	case 3:
 		return BF(mem);
 	case 4:
