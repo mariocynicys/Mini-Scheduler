@@ -302,7 +302,7 @@ void start(struct PCB *pcb_p)
 		// Convert process args to strings
 		// 12 because the max num of chars in an unsigned int is 11
 		char data[12];
-		snprintf(data, 12, "%u", pcb_p->data.run);
+		snprintf(data, 12, "%u\t", pcb_p->data.run);
 
 		char *args[] = {data, NULL};
 
@@ -313,14 +313,14 @@ void start(struct PCB *pcb_p)
 	}
 	int clk = getClk();
 	pcb_p->state = RUNNING;
-	fprintf(fp, "At time %u process %u started arr %u total %u remain %u wait %u\n", clk, pcb_p->data._id, pcb_p->data.arv, pcb_p->data.run, pcb_p->rem_t, clk-pcb_p->data.arv-pcb_p->exe_t);
+	fprintf(fp, "At time %u\t process %u\t started arr %u\t total %u\t remain %u\t wait %u\n", clk, pcb_p->data._id, pcb_p->data.arv, pcb_p->data.run, pcb_p->rem_t, clk-pcb_p->data.arv-pcb_p->exe_t);
 }
 
 void resume(struct PCB *pcb_p)
 {
 	int clk = getClk();
 	pcb_p->state = RUNNING;
-	fprintf(fp, "At time %u process %u resumed arr %u total %u remain %u wait %u\n", clk, pcb_p->data._id, pcb_p->data.arv, pcb_p->data.run, pcb_p->rem_t, clk-pcb_p->data.arv-pcb_p->exe_t);
+	fprintf(fp, "At time %u\t process %u\t resumed arr %u\t total %u\t remain %u\t wait %u\n", clk, pcb_p->data._id, pcb_p->data.arv, pcb_p->data.run, pcb_p->rem_t, clk-pcb_p->data.arv-pcb_p->exe_t);
 
 }
 
@@ -328,15 +328,15 @@ void stop(struct PCB *pcb_p)
 {
 	int clk = getClk();
 	pcb_p->state = WAITING;
-	fprintf(fp, "At time %u process %u stopped arr %u total %u remain %u wait %u\n", clk, pcb_p->data._id, pcb_p->data.arv, pcb_p->data.run, pcb_p->rem_t, clk-pcb_p->data.arv-pcb_p->exe_t);
+	fprintf(fp, "At time %u\t process %u\t stopped arr %u\t total %u\t remain %u\t wait %u\n", clk, pcb_p->data._id, pcb_p->data.arv, pcb_p->data.run, pcb_p->rem_t, clk-pcb_p->data.arv-pcb_p->exe_t);
 }
 
 void finish(struct PCB *pcb_p)
 {
 	int clk = getClk();
 	double WTA = (double)(clk-pcb_p->data.arv)/(double)(pcb_p->exe_t);
-	fprintf(fp, "At time %u process %u finished arr %u total %u remain %u wait %u ", clk, pcb_p->data._id, pcb_p->data.arv, pcb_p->data.run, pcb_p->rem_t, clk-pcb_p->data.arv-pcb_p->exe_t);
-	fprintf(fp, "TA %u WTA %.2f\n", clk-pcb_p->data.arv, WTA);
+	fprintf(fp, "At time %u\t process %u\t finished arr %u\t total %u\t remain %u\t wait %u\t ", clk, pcb_p->data._id, pcb_p->data.arv, pcb_p->data.run, pcb_p->rem_t, clk-pcb_p->data.arv-pcb_p->exe_t);
+	fprintf(fp, "TA %u\t WTA %.2f\n", clk-pcb_p->data.arv, WTA);
 	tot_wta += WTA;
 	tot_wait += (clk-pcb_p->data.arv-pcb_p->exe_t);
 	// This can be waitpid(no_pcb->pid, ...), but since this is a 1-core cpu, 1 process at a time, so no worries about which process it's gonna reap
